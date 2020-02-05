@@ -3,7 +3,9 @@
 set -e
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-DIR_BIN=$DIR/../bin
+DIR_MAIN=$DIR/..
+DIR_BIN=$DIR_MAIN/bin
+
 
 ARCH_BUILD=(x86_64 aarch64)
 
@@ -27,23 +29,31 @@ for arch in ${ARCH_BUILD[@]}; do
 
         NEED_BUILD=0
 
-        for bin_entry in "$(cat $d/Dockerfile |  grep "_VERSION=")"; do
-            bin_name=$(echo $bin_entry | cut -d_ -f1 | awk '{ print $2}')
-            bin_version=$(echo $bin_entry| cut -d\" -f2- | cut -d\" -f1)
+        
+        bin_name=$(echo $bin_entry | cut -d_ -f1 | awk '{ print $2}')
+        bin_version=$(echo $bin_entry| cut -d\" -f2- | cut -d\" -f1)
 
-            if [[ ! -f $DIR_BIN/linux/$arch/$bin_name ]]; then
-                # If this binary doesn't exist, we must build
-                NEED_BUILD=1
-                continue
-            else
-                args=$(cat $d/info | grep ${bin_name}_VERSION | cut -d\" -f2- | rev | cut -d\" -f2- | rev)
-                current_version="$(docker run -v $DIR_BIN/linux/$arch/$bin_name:/test/$bin_name --rm -it buildsystem bash -c "/test/$bin_name $args" | tr -d '\r')"
-
-                if [[ $current_version != $bin_version ]]; then
-                    NEED_BUILD=1
-                fi
-            fi
+        cat $DIR_MAIN/README.md | sed -n '/# Software list/,/# Build/{/# Software list/b;/# Build/b;p}' | tail -n+3 | \
+        while read line; do
+            echo $line
+            name=$(echo $line | cut -d\| -f2 | awk '{print $1}')
+            echo $name
         done
+
+        exit
+        if [[ ! -f $DIR_BIN/linux/$arch/$bin_name ]]; then
+            # If this binary doesn't exist, we must build
+            NEED_BUILD=1
+            continue
+        else
+            args=$(cat $d/info | grep ${bin_name}_VERSION | cut -d\" -f2- | rev | cut -d\" -f2- | rev)
+            current_version="$(docker run -v $DIR_BIN/linux/$arch/$bin_name:/test/$bin_name --rm -it buildsystem bash -c "/test/$bin_name $args" | tr -d '\r')"
+
+            if [[ $current_version != $bin_version ]]; then
+                NEED_BUILD=1
+            fi
+        fi
+        
 
 
         if [[ $NEED_BUILD -eq 1 ]]; then
