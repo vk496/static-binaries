@@ -1,5 +1,4 @@
-ARG BUILDPLATFORM=linux/amd64
-FROM --platform=$BUILDPLATFORM debian:buster
+FROM debian:buster
 
 
 # Install build tools
@@ -15,3 +14,5 @@ RUN apt-get update   &&  \
         pkg-config          \
         autopoint           \
         libncurses-dev
+
+WORKDIR /build
