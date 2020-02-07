@@ -1,1 +1,1 @@
-nano_VERSION="--version | head -1 | rev | awk '{print $1}' | rev"
+VERSION="--version | head -1 | rev | awk '{print $1}' | rev"

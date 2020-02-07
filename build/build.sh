@@ -7,7 +7,8 @@ DIR_MAIN=$DIR/..
 DIR_BIN=$DIR_MAIN/bin
 
 
-ARCH_BUILD=(x86_64 aarch64)
+ARCH_BUILD=(x86_64 aarch64 x86)
+# ARCH_BUILD=(x86_64)
 
 if [[ $(docker version -f '{{.Server.Experimental}}') != "true" ]]; then
     >&2 echo "Error. Docker experimental features must be enabled"
@@ -70,7 +71,8 @@ function simple_join_by {
 
 # Setup local Registry for multi-arch images. Allow to fail if already running
 set +e
-docker run -d -p 5000:5000 --name registry-vk496 registry:2
+docker container rm registry-vk496 -f
+docker run --rm -d -p 5000:5000 --name registry-vk496 registry:2
 
 # Setup multiarch stuff
 docker buildx create --driver-opt network=host --name buildsystem --use
@@ -95,18 +97,19 @@ while read line; do
     bin_sample=$(echo $line | cut -d\| -f4 | awk '{print $1}' | cut -d, -f1)
     url=$(echo $line | cut -d\| -f5 | awk '{print $1}' | cut -d, -f1 | cut -d\( -f2 | rev | cut -d\) -f2 | rev | sed "s/\${VERSION}/$version/g")
 
+    echo "Checking $name..."
     NEED_BUILD=()
 
     for arch in ${ARCH_BUILD[@]}; do
         mkdir -p $DIR_BIN/linux/$arch
         darch=$(darch $arch)
 
-        if [[ ! -f $DIR_BIN/linux/$arch/$name ]]; then
+        if [[ ! -f $DIR_BIN/linux/$arch/$bin_sample ]]; then
             # If this binary doesn't exist, we must build
             NEED_BUILD+=($darch)
         else
             # args=$(cat $d/info | grep ${bin_name}_VERSION | cut -d\" -f2- | rev | cut -d\" -f2- | rev)
-            args=$(cat $DIR/software/$name/info | grep ${name}_VERSION | cut -d\" -f2- | rev | cut -d\" -f2- | rev)
+            args=$(cat $DIR/software/$name/info | grep VERSION= | cut -d\" -f2- | rev | cut -d\" -f2- | rev)
 
             if [[ "$(docker images -q $DOCKER_BUILDSYSTEM 2> /dev/null)" != "" ]]; then
                 docker rmi $DOCKER_BUILDSYSTEM
@@ -118,8 +121,6 @@ while read line; do
             fi
         fi
     done
-
-    exit
 
     if [[ ${#NEED_BUILD[@]} -ne 0 ]]; then
         dname="vk496-$name"
