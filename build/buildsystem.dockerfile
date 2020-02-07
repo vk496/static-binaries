@@ -49,8 +49,33 @@ RUN LIBS=(\
         cd $WORKDIR; rm -Rf $WORKDIR/*; \
     done
 
+
+# OPENSSL
+RUN set -e; \
+    case $(uname -m) in \
+    x86_64)             SSL_ARCH=linux-x86_64 ;; \
+    aarch64)          SSL_ARCH=linux-aarch64 ;; \
+    armv7l)     SSL_ARCH=linux-generic32 ;; \
+    *)                  echo "unknown!"; exit 1 ;; \
+    esac; \
+    \
+    if [[ $(getconf LONG_BIT) -eq 32 ]]; then \
+        SSL_ARCH=linux-x32; \
+    fi; \
+    echo $SSL_ARCH; \
+    \
+    curl -LO https://github.com/openssl/openssl/archive/OpenSSL_1_0_2u.tar.gz; \
+        tar xvf *; \
+        cd */; \
+            CC="$CC_MUSL" ./Configure $SSL_ARCH --prefix=/mlibs; \
+            make -j$(nproc --all); \
+            make install; \
+        cd $WORKDIR; rm -Rf $WORKDIR/*;
+
+
 # Always will be a empty dir
 RUN mkdir /out
+ENV LIBS_MUSL=/mlibs/
 
 ############################
 ENV CFLAGS_MUSL="-I/mlibs/include/ -I/mlibs/usr/local/include/"
