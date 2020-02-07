@@ -8,6 +8,7 @@ Static binaries for common tools
 | nano            | 4.7        | nano     | [.tar.xz](https://www.nano-editor.org/dist/v4/nano-${VERSION}.tar.xz)  |
 | squashfs        | 4.4        | mksquashfs     | [.tar.gz](https://github.com/plougher/squashfs-tools/archive/${VERSION}.tar.gz)  |
 | wget            | 1.20.3     | wget     | [.tar.gz](https://ftp.gnu.org/gnu/wget/wget-${VERSION}.tar.gz)  |
+| p7zip           | 16.02      | 7za      | [.tar.gz](https://github.com/btolab/p7zip/archive/${VERSION}.tar.gz)  |
 
 # Build
 If you want to build the binaries by yourself, just execute:

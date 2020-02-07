@@ -1,0 +1,1 @@
+VERSION="| head -2 | grep -i copyright | cut -d: -f1 | cut -d" " -f4"
