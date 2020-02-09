@@ -78,5 +78,5 @@ RUN mkdir /out
 ENV LIBS_MUSL=/mlibs/
 
 ############################
-ENV CFLAGS_MUSL="-I/mlibs/include/ -I/mlibs/usr/local/include/"
-ENV LDLAGS_MUSL="-L/mlibs/lib/ -L/mlibs/usr/local/lib/"
+ENV CFLAGS_MUSL="-I/mlibs/include/ -I/mlibs/usr/local/include/ -I/include/"
+ENV LDLAGS_MUSL="-L/mlibs/lib/ -L/mlibs/usr/local/lib/ -L/lib/"
