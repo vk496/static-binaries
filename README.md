@@ -11,6 +11,8 @@ Static binaries for common tools
 | p7zip           | 16.02      | 7za      | [.tar.gz](https://github.com/btolab/p7zip/archive/${VERSION}.tar.gz)  |
 | ncdu            | 1.14.1     | ncdu     | [.tar.gz](https://dev.yorhel.nl/download/ncdu-${VERSION}.tar.gz)  |
 | ddrescue        | 1.24       | ddrescue | [.tar.lz](https://mirror.cyberbits.eu/gnu/ddrescue/ddrescue-${VERSION}.tar.lz)  |
+| file            | 5.38       | file     | [.tar.lz](ftp://ftp.astron.com/pub/file/file-${VERSION}.tar.gz)  |
+
 # Build
 If you want to build the binaries by yourself, just execute:
 

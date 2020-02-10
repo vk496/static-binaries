@@ -7,8 +7,8 @@ DIR_MAIN=$DIR/..
 DIR_BIN=$DIR_MAIN/bin
 
 
-ARCH_BUILD=(x86_64 aarch64 x86)
-# ARCH_BUILD=(x86_64)
+# ARCH_BUILD=(x86_64 aarch64 x86 armv7l)
+ARCH_BUILD=(x86_64)
 
 if [[ $(docker version -f '{{.Server.Experimental}}') != "true" ]]; then
     >&2 echo "Error. Docker experimental features must be enabled"
@@ -17,11 +17,13 @@ fi
 
 #TODO: Simplify this two functions
 
+# Be careful. This have a dependencie with openssl inside the buildsystem Dockerfile
 function darch() {
     case "$1" in
     x86_64)     echo "linux/amd64" ;;
     x86)        echo "linux/386" ;; 
     aarch64)    echo "linux/arm64/v8" ;; 
+    armv7l)     echo "linux/arm/v7" ;; 
     *)          echo "unknown!"; exit 1 ;;
     esac
 }
@@ -31,6 +33,7 @@ function osarch() {
     linux/amd64)        echo "x86_64" ;;
     linux/386)          echo "x86" ;; 
     linux/arm64/v8)     echo "aarch64" ;; 
+    linux/arm/v7)       echo "armv7l" ;; 
     *)                  echo "unknown!"; exit 1 ;;
     esac
 }
